@@ -1,0 +1,31 @@
+FROM ubuntu:14.04
+
+ARG TARGET_DIR=/app
+
+COPY gcc-4.9.2.tar.gz ${TARGET_DIR}/gcc-4.9.2.tar.gz
+
+
+RUN apt-get update && \
+    apt-get install -y build-essential && \
+    apt-get install -y wget && \
+    #apt-get install -y gcc && \
+    # install gcc-4.9.2 begin
+    cd ${TARGET_DIR} && \
+    tar -zxf gcc-4.9.2.tar.gz && \
+    cd gcc-4.9.2 && \ 
+    mkdir -p /usr/local/gcc-4.9.2 && \
+    ./contrib/download_prerequisites && \
+    ./configure --prefix=/usr/local/gcc-4.9.2 --enable-bootstrap --enable-checking=release --enable-languages=c,c++ --disable-multilib && \
+    make && make install && \
+    cd /usr/bin && \
+    mv gcc gcc-4.8.5 && ln -sf /usr/local/gcc-4.9.2/bin/gcc gcc && \
+    mv g++ g++-4.8.5 && ln -sf /usr/local/gcc-4.9.2/bin/g++ g++ && \
+    mv gcc-ar gcc-ar-4.8.5 && ln -sf /usr/local/gcc-4.9.2/bin/gcc-ar gcc-ar && \
+    mv gcc-nm gcc-nm-4.8.5 && ln -sf /usr/local/gcc-4.9.2/bin/gcc-nm gcc-nm && \
+    mv gcc-ranlib gcc-ranlib-4.8.5 && ln -sf /usr/local/gcc-4.9.2/bin/gcc-ranlib gcc-ranlib && \
+    # clean
+    #cd ${TARGET_DIR} && rm -rf ${TARGET_DIR}/*\
+    rm -rf ${TARGET_DIR} && \
+    apt-get clean && apt-get autoclean && apt-get autoremove && \
+    rm -rf /tmp/* && \
+    echo 'finish'

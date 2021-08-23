@@ -1,0 +1,35 @@
+FROM gcc:4.9.2
+
+ENV TARGET_DIR /app
+
+#ADD https://bigsearcher.com/mirrors/gcc/releases/gcc-4.9.2/gcc-4.9.2.tar.bz2 ${TARGET_DIR}
+COPY hiredis-1.0.0.tar.gz ${TARGET_DIR}/hiredis-1.0.0.tar.gz
+COPY boost_1_55_0.tar.gz ${TARGET_DIR}/boost_1_55_0.tar.gz
+COPY cmake-3.18.5.tar.gz ${TARGET_DIR}/cmake-3.18.5.tar.gz
+COPY mongo-c-driver-1.17.3.tar.gz ${TARGET_DIR}/mongo-c-driver-1.17.3.tar.gz
+COPY mongo-cxx-driver-r3.1.3.tar.gz ${TARGET_DIR}/mongo-cxx-driver-r3.1.3.tar.gz
+
+
+RUN cd ${TARGET_DIR} && tar -zxf hiredis-1.0.0.tar.gz && cd hiredis-1.0.0 && make && make install && \
+    # install cmake start
+    cd ${TARGET_DIR} && tar -zxf cmake-3.18.5.tar.gz && cd cmake-3.18.5 && ./bootstrap && make && make install && \
+    # install mongo-c-driver-1.17.3 start
+    cd ${TARGET_DIR} && tar -zxf mongo-c-driver-1.17.3.tar.gz && cd mongo-c-driver-1.17.3 && mkdir cmake-build && cd cmake-build && \
+    cmake -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF -DCMAKE_INSTALL_PREFIX=/usr/local/mongoc17 -DCMAKE_PREFIX_PATH=/usr/local/mongoc17 .. && \
+    make && make install && \
+    # install mongo-cxx-driver-r3.1.3 start
+    cd /usr/lib64 && \
+    ln -sf /usr/local/mongoc17/lib64/libbson-1.0.so.0.0.0 libbson-1.0.so && \
+    ln -s /usr/local/mongoc17/lib64/libmongoc-1.0.so.0.0.0 libmongoc-1.0.so && \
+    cd ${TARGET_DIR} && tar -zxf mongo-cxx-driver-r3.1.3.tar.gz && cd mongo-cxx-driver-r3.1.3 && mkdir cmake-build && cd cmake-build && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DLIBMONGOC_DIR=/usr/local/mongoc17 -DLIBBSON_DIR=/usr/local/mongoc17 -DCMAKE_INSTALL_PREFIX=/usr/local/mongocxx31 && \
+    make && make install && \
+    # install protobuf start  todo!!!!!!
+    # install boost start
+    cd ${TARGET_DIR} && tar -zxf boost_1_55_0.tar.gz && cd boost_1_55_0 && ./bootstrap.sh --prefix=/usr/ && ./b2 install && \
+    # install glog start  todo!!!!!!
+    # clean
+    cd ${TARGET_DIR} && rm -rf ${TARGET_DIR}/*\
+    apt-get clean && apt-get autoclean && apt-get autoremove && \
+    rm -rf /tmp/* && \
+    echo 'finish'
