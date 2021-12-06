@@ -19,8 +19,7 @@ RUN yum install -y glibc-devel gcc gcc-c++ bison flex which psmisc ncurses-devel
     # install tars-cpp
     cd /tmp/build && \
     git clone https://github.com/TarsCloud/TarsCpp.git --recursive && \
-    cd TarsCpp && git checkout v2.4.19 && \
-    cmake . && make && make install && \
+    cd TarsCpp && cmake . && make && make install && \
     # clean
     cd / && rm -rf /tmp/build && yum clean all && \
     echo 'Install Finish'
