@@ -2,6 +2,7 @@ FROM centos:7
 
 ENV GOROOT /usr/local/go
 ENV GOPATH /root/gopath
+ENV PATH ${PATH}:${GOROOT}/bin:${GOPATH}/bin
 
 RUN mkdir -p /tmp/build && \
     yum install -y git wget vim
