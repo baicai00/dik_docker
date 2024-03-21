@@ -1,0 +1,60 @@
+services:
+  mongodb-rs01:
+    image: mongo:6.0.6
+    container_name: mongodb-rs01
+    ports:
+      - 27017:27017
+    environment:
+      - TZ=Asia/Shanghai
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin123
+    volumes:
+      - /data/mongo-rs/data01:/data/db
+      - ./key:/data/key
+      - ./mongodb01/mongod.conf:/etc/mongod.conf
+    command: mongod -f /etc/mongod.conf --replSet mongo-rs --auth --keyFile /data/key/mongo-rs.key
+    networks:
+      mongo-rs-net:
+        aliases:
+          - mongodb01
+
+  mongodb-rs02:
+    image: mongo:6.0.6
+    container_name: mongodb-rs02
+    ports:
+      - 27018:27017
+    environment:
+      - TZ=Asia/Shanghai
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin123
+    volumes:
+      - /data/mongo-rs/data02:/data/db
+      - ./key:/data/key
+      - ./mongodb02/mongod.conf:/etc/mongod.conf
+    command: mongod -f /etc/mongod.conf --replSet mongo-rs --auth --keyFile /data/key/mongo-rs.key
+    networks:
+      mongo-rs-net:
+        aliases:
+          - mongodb02
+
+  mongodb-rs03:
+    image: mongo:6.0.6
+    container_name: mongodb-rs03
+    ports:
+      - 27019:27017
+    environment:
+      - TZ=Asia/Shanghai
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin123
+    volumes:
+      - /data/mongo-rs/data03:/data/db
+      - ./key:/data/key
+      - ./mongodb03/mongod.conf:/etc/mongod.conf
+    command: mongod -f /etc/mongod.conf --replSet mongo-rs --auth --keyFile /data/key/mongo-rs.key
+    networks:
+      mongo-rs-net:
+        aliases:
+          - mongodb03
+
+networks:
+  mongo-rs-net:
